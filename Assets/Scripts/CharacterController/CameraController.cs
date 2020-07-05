@@ -39,6 +39,7 @@ public class CameraController : MonoBehaviour
     public void SetTarget(Transform transform)
     {
         _target = transform;
+        //_target.position += new Vector3(0.0f, 5.0f, 0.0f); // new Vector3(_target.transform.position.x + 10.0f, _target.transform.position.y, _target.transform.position.z);
     }
 
     // Update is called once per frame
@@ -57,21 +58,22 @@ public class CameraController : MonoBehaviour
     private void LateUpdate()
     {
         RotationCamera();
+       
     }
 
     private void RotationCamera()
     {
         transform.RotateAround(_target.position, Vector3.up, Input.GetAxis(MOUSE_X) * _sensitivity);
 
-        Vector3 position = _target.position - (transform.rotation * Vector3.forward * _distance);
+        Vector3 position = _target.position - (transform.rotation * Vector3.forward * _distance) ;
         position = position + (transform.rotation * Vector3.right * _offsetPosition);
         position = new Vector3(position.x, _target.position.y + _height, position.z);
 
-        _rotationY += Input.GetAxis(MOUSE_Y) * _sensitivity;
+        _rotationY -= Input.GetAxis(MOUSE_Y) * _sensitivity;
         _rotationY = Mathf.Clamp(_rotationY, -Mathf.Abs(_minY), Mathf.Abs(_maxY));
         transform.localEulerAngles = new Vector3(_rotationY, transform.localEulerAngles.y, 0);
 
-        transform.position = Vector3.Lerp(transform.position, position, _speed * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, position + new Vector3(0.0f, 0.3f, 0.3f), _speed * Time.deltaTime);
     }
 
     private void LookAt()

@@ -8,6 +8,7 @@ public sealed class PlayerMovement : MonoBehaviour
     [Range(0.0f, 1.0f), SerializeField] private float _moveSpeed;
     private Vector3 _movement;
     private PlayerAnimation _playerAnimation;
+    private Character _character;
     private NavMeshAgent _agent;
     private Camera _camera;
     private Jumper _jumper;
@@ -34,6 +35,9 @@ public sealed class PlayerMovement : MonoBehaviour
         _jumper = GetComponent<Jumper>();
         _rb = GetComponent<Rigidbody>();
         _playerAnimation = GetComponent<PlayerAnimation>();
+        _character = GetComponent<Character>();
+
+        
         FindObjectOfType<CameraController>().SetTarget(transform);
         _standingSpeed = _agent.speed;
         _sittingSpeed = _standingSpeed - 1.0f;
@@ -53,7 +57,11 @@ public sealed class PlayerMovement : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            _playerAnimation.OnFireEnable();
+
+            if (_character.Shoot()) {
+                
+                _playerAnimation.OnFireEnable();
+            }
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -74,8 +82,12 @@ public sealed class PlayerMovement : MonoBehaviour
         transform.localEulerAngles = new Vector3(transform.localEulerAngles.x,
             _camera.transform.localEulerAngles.y, transform.localEulerAngles.z);
 
-        _agent.Move(targetDirection * (timeDelta * _moveSpeed));
-        _agent.SetDestination(transform.position + targetDirection);
+
+        if (_agent.isActiveAndEnabled)
+        {
+            _agent.Move(targetDirection * (timeDelta * _moveSpeed));
+            _agent.SetDestination(transform.position + targetDirection);
+        }
 
         _playerAnimation.SetMove(_movement);
 
